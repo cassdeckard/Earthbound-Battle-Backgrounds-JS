@@ -71,6 +71,15 @@ function parseFullscreen(fullscreen) {
   }
 }
 
+function parseRandomIntervalParam(number) {
+  const canvas = document.querySelector("canvas");
+  let num = Number(number);
+  if (isNaN(num)) {
+    num = 0;
+  }
+  canvas.dataset.randomInterval = num;
+}
+
 function isIOS() {
   return /(iPad|iPhone|iPod)/gi.test(navigator.userAgent);
 }

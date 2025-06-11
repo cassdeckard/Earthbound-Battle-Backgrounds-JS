@@ -240,21 +240,22 @@ document.addEventListener("DOMContentLoaded", function () {
   suggested = document.getElementById("suggested");
   aspectRatio = document.getElementById("aspectRatio");
   frameskip = document.getElementById("frameskip");
+  let randomInterval = document.getElementById("randomInterval");
   let randomLayer = document.getElementById("randomLayer");
-  let endlessRandom = document.getElementById("endlessRandom");
   let fullscreen = document.getElementById("fullscreen");
 
   // okay, we haven't gone fullscreen
   if (content) {
     endlessIntervalID = null;
     randomLayer.onclick = setRandomLayer;
-    endlessRandom.onclick = setEndlessRandom;
     fullscreen.onclick = setupFullscreen;
 
     createLayerDropdown();
     createSuggestedLayersDropdown();
+    createRandomIntervalDropdown();
     setupDropdownPushStates();
     setupSelectedValues();
+    setEndlessRandom();
   }
 
   window.History.Adapter.bind(window, "statechange", function () {
@@ -281,6 +282,19 @@ function createSuggestedLayersDropdown() {
     }
   }
   suggested.innerHTML = optionHtml;
+}
+
+function createRandomIntervalDropdown() {
+  randomInterval.innerHTML = "<option value='0'>Off</option>";
+  for (let i = 5; i <= 30; i+=5) {
+    randomInterval.innerHTML += "<option value='" + i + "'>" + i + "</option>";
+  }
+  for (let i = 60; i <= 300; i+=30) {
+    randomInterval.innerHTML += "<option value='" + i + "'>" + i + "</option>";
+  }
+  for (let i = 600; i <= 3600; i+=60) {
+    randomInterval.innerHTML += "<option value='" + i + "'>" + i + "</option>";
+  }
 }
 
 function setupDropdownPushStates() {
@@ -337,6 +351,16 @@ function setupDropdownPushStates() {
       setUrlFromString("frameskip=" + value)
     );
   };
+
+  randomInterval.onchange = function (e) {
+    var value = this.value;
+    History.pushState(
+      { randomInterval: value },
+      document.title,
+      setUrlFromString("randomInterval=" + value)
+    );
+    setEndlessRandom();
+  };
 }
 
 function setRandomLayer() {
@@ -348,16 +372,18 @@ function setRandomLayer() {
 }
 
 function setEndlessRandom() {
-  if (endlessIntervalID == null) {
-    endlessRandom.textContent = "Endless Random (on)";
+  if (randomInterval.value == 0) {
+    clearInterval(endlessIntervalID);
+    endlessIntervalID = null;
+  }
+  else {
     setRandomLayer();
+    if (endlessIntervalID != null) {
+      clearInterval(endlessIntervalID);
+    }
     endlessIntervalID = setInterval(function () {
       setRandomLayer();
-    }, 7500);
-  } else {
-    clearInterval(endlessIntervalID);
-    endlessRandom.textContent = "Endless Random (off)";
-    endlessIntervalID = null;
+    }, randomInterval.value * 1000);
   }
 }
 
@@ -385,6 +411,12 @@ function setupSelectedValues() {
   frameskip.innerHTML = frameskip.innerHTML.replace(
     new RegExp(frameskipReplace),
     "selected " + frameskipReplace
+  );
+
+  var randomIntervalReplace = `value="${canvas.dataset.randomInterval}"`;
+  randomInterval.innerHTML = randomInterval.innerHTML.replace(
+    new RegExp(randomIntervalReplace),
+    "selected " + randomIntervalReplace
   );
 }
 

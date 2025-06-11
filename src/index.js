@@ -16,6 +16,7 @@ var setupEngine = (exports.setupEngine = function setupEngine() {
   let layer2Val = parseLayerParam(params.layer2, { firstLayer: false });
   let frameskip = parseFrameskipParam(params.frameskip);
   let aspectRatio = parseAspectRatioParam(params.aspectRatio);
+  parseRandomIntervalParam(params.randomInterval);
   parseFullscreen(params.fullscreen);
   let debug = params.debug === "true";
 
