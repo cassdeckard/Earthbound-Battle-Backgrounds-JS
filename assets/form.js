@@ -364,11 +364,10 @@ function setupDropdownPushStates() {
 }
 
 function setRandomLayer() {
-  layer1.selectedIndex = String(Math.floor(Math.random() * 327));
-  layer2.selectedIndex = String(Math.floor(Math.random() * 327));
-  // Fake an onchange to set URL and redraw scene
-  layer1.onchange();
-  layer2.onchange();
+  const numOptions = suggested.options.length;
+  let randomIndex = Math.floor(Math.random() * numOptions);
+  suggested.selectedIndex = randomIndex;
+  suggested.onchange();
 }
 
 function setEndlessRandom() {
