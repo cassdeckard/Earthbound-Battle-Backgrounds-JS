@@ -10,22 +10,51 @@
     "babel-preset-stage-0": "^6.24.1",
     "babili-webpack-plugin": "^0.1.2",
     "binary-loader": "^0.0.1",
+    "concurrently": "^7.6.0",
     "cross-env": "^7.0.3",
+    "electron": "^28.0.0",
+    "electron-builder": "^24.0.0",
     "express": "^4.17.1",
+    "wait-on": "^7.0.1",
     "standard": "^11.0.1",
     "string.prototype.padstart": "^3.1.0",
     "webpack": "^4.42.0",
     "webpack-cli": "^4.9.2"
   },
-  "main": "dist/index.js",
+  "main": "electron-main.js",
   "scripts": {
     "compile": "cross-env NODE_OPTIONS=--openssl-legacy-provider webpack",
     "lint": "standard *.js src/**/*.js --fix",
     "prepublishOnly": "npm run compile",
     "start": "node server",
-    "watch": "cross-env NODE_OPTIONS=--openssl-legacy-provider NODE_ENV=development webpack --watch"
+    "watch": "cross-env NODE_OPTIONS=--openssl-legacy-provider NODE_ENV=development webpack --watch",
+    "electron": "npm run compile && electron .",
+    "electron-dev": "concurrently \"npm run watch\" \"wait-on dist/index.js && electron .\"",
+    "dist": "npm run compile && electron-builder"
   },
   "engines": {
     "node": ">= 0.8.0"
+  },
+  "build": {
+    "appId": "com.earthbound.battlebackgrounds",
+    "productName": "Earthbound Battle Backgrounds",
+    "directories": {
+      "output": "electron-dist"
+    },
+    "files": [
+      "dist/**/*",
+      "assets/**/*",
+      "index.html",
+      "electron-main.js"
+    ],
+    "mac": {
+      "category": "public.app-category.entertainment"
+    },
+    "win": {
+      "target": "nsis"
+    },
+    "linux": {
+      "target": "AppImage"
+    }
   }
 }
