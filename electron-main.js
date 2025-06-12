@@ -26,52 +26,36 @@ function createWindow () {
     mainWindow.webContents.openDevTools()
   }
 
+  let emitEvent = (eventName) => {
+    mainWindow.webContents.executeJavaScript(`
+      try {
+        document.dispatchEvent(new Event('${eventName}'));
+      } catch (error) {
+        console.error('Error in ${eventName} shortcut:', error);
+        throw error;
+      }
+    `).catch(err => console.error(`Error executing ${eventName}:`, err))
+  }
+
   // Register global shortcuts
   globalShortcut.register('w', () => {
     mainWindow.close()
   })
 
   globalShortcut.register('escape', () => {
-    mainWindow.webContents.executeJavaScript(`
-      try {
-        document.dispatchEvent(new Event('toggleFullscreen'));
-      } catch (error) {
-        console.error('Error in escape shortcut:', error);
-        throw error;
-      }
-    `).catch(err => console.error('Error executing fullscreen shortcut:', err))
-  })
-
-  globalShortcut.register('down', () => {
-    mainWindow.webContents.executeJavaScript(`
-      try {
-        const randomInterval = document.getElementById('randomInterval');
-        if (randomInterval) {
-          const currentIndex = randomInterval.selectedIndex;
-          const newIndex = Math.max(0, currentIndex - 1);
-          randomInterval.selectedIndex = newIndex;
-          randomInterval.dispatchEvent(new Event('change'));
-        }
-      } catch (error) { // this seems redundant but is actually needed..
-        throw error;    //something about propagating the error from the renderer to the main process
-      }
-    `).catch(err => console.error('Error executing up shortcut:', err))
+    emitEvent('toggleFullscreen')
   })
 
   globalShortcut.register('up', () => {
-    mainWindow.webContents.executeJavaScript(`
-      try {
-        const randomInterval = document.getElementById('randomInterval');
-        if (randomInterval) {
-          const currentIndex = randomInterval.selectedIndex;
-          const newIndex = Math.min(randomInterval.options.length - 1, currentIndex + 1);
-          randomInterval.selectedIndex = newIndex;
-          randomInterval.dispatchEvent(new Event('change'));
-        }
-      } catch (error) { // this seems redundant but is actually needed..
-        throw error;    //something about propagating the error from the renderer to the main process
-      }
-    `).catch(err => console.error('Error executing down shortcut:', err))
+    emitEvent('randomIntervalUp')
+  })
+
+  globalShortcut.register('down', () => {
+    emitEvent('randomIntervalDown')
+  })
+
+  globalShortcut.register('left', () => {
+    emitEvent('randomIntervalOff')
   })
 
   // Listen for IPC messages from renderer

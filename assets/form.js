@@ -252,6 +252,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Add custom event listener for fullscreen toggle
     document.addEventListener('toggleFullscreen', toggleFullscreen);
+    document.addEventListener('randomIntervalUp', randomIntervalUp);
+    document.addEventListener('randomIntervalDown', randomIntervalDown);
+    document.addEventListener('randomIntervalOff', randomIntervalOff);
 
     createLayerDropdown();
     createSuggestedLayersDropdown();
@@ -364,6 +367,27 @@ function setupDropdownPushStates() {
     );
     setEndlessRandom();
   };
+}
+
+function randomIntervalUp() {
+  if (randomInterval) {
+    randomInterval.selectedIndex = Math.min(randomInterval.options.length - 1, randomInterval.selectedIndex + 1);
+    randomInterval.onchange();
+  }
+}
+
+function randomIntervalDown() {
+  if (randomInterval) {
+    randomInterval.selectedIndex = Math.max(0, randomInterval.selectedIndex - 1);
+    randomInterval.onchange();
+  }
+}
+
+function randomIntervalOff() {
+  if (randomInterval) {
+    randomInterval.selectedIndex = 0;
+    randomInterval.onchange();
+  }
 }
 
 function setRandomLayer() {
