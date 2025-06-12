@@ -68,6 +68,8 @@ function parseAspectRatioParam(number) {
 function parseFullscreen(fullscreen) {
   if (fullscreen == "true") {
     setupFullscreen();
+  } else {
+    tearDownFullscreen();
   }
 }
 

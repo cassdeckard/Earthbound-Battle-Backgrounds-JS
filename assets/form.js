@@ -248,7 +248,7 @@ document.addEventListener("DOMContentLoaded", function () {
   if (content) {
     endlessIntervalID = null;
     randomLayer.onclick = setRandomLayer;
-    fullscreen.onclick = setupFullscreen;
+    fullscreen.onclick = enterFullscreen;
 
     // Add custom event listener for fullscreen toggle
     document.addEventListener('toggleFullscreen', toggleFullscreen);
@@ -446,24 +446,23 @@ function setupSelectedValues() {
   );
 }
 
+function isFullscreen() {
+  return document.querySelector("canvas").getAttribute("id") == "full";
+}
+
 function toggleFullscreen() {
-  const canvas = document.querySelector("canvas");
-  if (canvas.getAttribute("id") == "full") {
+  if (isFullscreen()) {
     exitFullscreen();
   } else {
-    setupFullscreen();
+    enterFullscreen();
   }
 }
 
-function exitFullscreen() {
-  const canvas = document.querySelector("canvas");
-  const content = document.querySelector("section#everything");
-  canvas.setAttribute("id", "");
-  content.classList.remove("hidden");
+function enterFullscreen() {
   History.pushState(
-    { fullscreen: null },
+    { fullscreen: true },
     document.title,
-    setUrlFromString("fullscreen=false")
+    setUrlFromString("fullscreen=" + true)
   );
 }
 
@@ -472,9 +471,19 @@ function setupFullscreen() {
   const content = document.querySelector("section#everything");
   canvas.setAttribute("id", "full");
   content.classList.add("hidden");
+}
+
+function exitFullscreen() {
   History.pushState(
-    { fullscreen: true },
+    { fullscreen: null },
     document.title,
-    setUrlFromString("fullscreen=" + true)
+    setUrlFromString("fullscreen=false")
   );
+}
+
+function tearDownFullscreen() {
+  const canvas = document.querySelector("canvas");
+  const content = document.querySelector("section#everything");
+  canvas.setAttribute("id", "");
+  content.classList.remove("hidden");
 }

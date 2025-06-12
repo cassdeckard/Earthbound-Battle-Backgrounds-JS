@@ -2,7 +2,7 @@ const { app, BrowserWindow, globalShortcut, ipcMain } = require('electron')
 const path = require('path')
 
 // Keep a global reference of the window object
-let mainWindow
+let mainWindow;
 
 function createWindow () {
   // Create the browser window
@@ -19,11 +19,11 @@ function createWindow () {
   mainWindow.autoHideMenuBar = true;
 
   // Load the index.html file
-  mainWindow.loadFile('index.html')
+  mainWindow.loadFile('index.html');
 
   // Open the DevTools in development
   if (process.env.NODE_ENV === 'development') {
-    mainWindow.webContents.openDevTools()
+    mainWindow.webContents.openDevTools();
   }
 
   let emitEvent = (eventName) => {
@@ -34,28 +34,33 @@ function createWindow () {
         console.error('Error in ${eventName} shortcut:', error);
         throw error;
       }
-    `).catch(err => console.error(`Error executing ${eventName}:`, err))
+    `).catch(err => console.error(`Error executing ${eventName}:`, err));
   }
 
   // Register global shortcuts
   globalShortcut.register('w', () => {
-    mainWindow.close()
+    mainWindow.close();
   })
 
   globalShortcut.register('escape', () => {
-    emitEvent('toggleFullscreen')
+    emitEvent('toggleFullscreen');
   })
 
   globalShortcut.register('up', () => {
-    emitEvent('randomIntervalUp')
+    emitEvent('randomIntervalUp');
   })
 
   globalShortcut.register('down', () => {
-    emitEvent('randomIntervalDown')
+    emitEvent('randomIntervalDown');
   })
 
   globalShortcut.register('left', () => {
-    emitEvent('randomIntervalOff')
+    emitEvent('randomIntervalOff');
+  })
+
+  globalShortcut.register('alt+shift+i', () => {
+    // toggle dev tools
+    mainWindow.webContents.openDevTools();
   })
 
   // Listen for IPC messages from renderer
@@ -71,20 +76,24 @@ function createWindow () {
 }
 
 // This method will be called when Electron has finished initialization
-app.whenReady().then(createWindow)
+app.whenReady().then(createWindow);
 
 // Quit when all windows are closed
 app.on('window-all-closed', function () {
   // On macOS, keep the app running even when all windows are closed
-  if (process.platform !== 'darwin') app.quit()
+  if (process.platform !== 'darwin') {
+    app.quit();
+  }
 })
 
 app.on('activate', function () {
   // On macOS, re-create a window when the dock icon is clicked
-  if (mainWindow === null) createWindow()
+  if (mainWindow === null) {
+    createWindow();
+  }
 })
 
 // Unregister all shortcuts when the app is about to quit
 app.on('will-quit', () => {
-  globalShortcut.unregisterAll()
+  globalShortcut.unregisterAll();
 }) 
