@@ -28,9 +28,9 @@
     "prepublishOnly": "npm run compile",
     "start": "node server",
     "watch": "cross-env NODE_OPTIONS=--openssl-legacy-provider NODE_ENV=development webpack --watch",
-    "electron": "npm run compile && electron .",
-    "electron-dev": "concurrently \"npm run watch\" \"wait-on dist/index.js && electron .\"",
-    "dist": "npm run compile && electron-builder"
+    "electron": "npm run compile && npx electron .",
+    "electron-dev": "concurrently \"npm run watch\" \"wait-on dist/index.js && npx electron .\"",
+    "dist": "npm run compile && npx electron-builder"
   },
   "engines": {
     "node": ">= 0.8.0"

@@ -1,4 +1,4 @@
-const { app, BrowserWindow } = require('electron')
+const { app, BrowserWindow, globalShortcut, ipcMain } = require('electron')
 const path = require('path')
 
 // Keep a global reference of the window object
@@ -10,8 +10,9 @@ function createWindow () {
     width: 800,
     height: 600,
     webPreferences: {
-      nodeIntegration: false,
-      contextIsolation: true
+      nodeIntegration: true,
+      contextIsolation: false,
+      enableRemoteModule: true
     },
     icon: path.join(__dirname, 'assets/favicon-32x32.png')
   })
@@ -24,6 +25,59 @@ function createWindow () {
   if (process.env.NODE_ENV === 'development') {
     mainWindow.webContents.openDevTools()
   }
+
+  // Register global shortcuts
+  globalShortcut.register('w', () => {
+    mainWindow.close()
+  })
+
+  globalShortcut.register('escape', () => {
+    mainWindow.webContents.executeJavaScript(`
+      try {
+        document.dispatchEvent(new Event('toggleFullscreen'));
+      } catch (error) {
+        console.error('Error in escape shortcut:', error);
+        throw error;
+      }
+    `).catch(err => console.error('Error executing fullscreen shortcut:', err))
+  })
+
+  globalShortcut.register('down', () => {
+    mainWindow.webContents.executeJavaScript(`
+      try {
+        const randomInterval = document.getElementById('randomInterval');
+        if (randomInterval) {
+          const currentIndex = randomInterval.selectedIndex;
+          const newIndex = Math.max(0, currentIndex - 1);
+          randomInterval.selectedIndex = newIndex;
+          randomInterval.dispatchEvent(new Event('change'));
+        }
+      } catch (error) { // this seems redundant but is actually needed..
+        throw error;    //something about propagating the error from the renderer to the main process
+      }
+    `).catch(err => console.error('Error executing up shortcut:', err))
+  })
+
+  globalShortcut.register('up', () => {
+    mainWindow.webContents.executeJavaScript(`
+      try {
+        const randomInterval = document.getElementById('randomInterval');
+        if (randomInterval) {
+          const currentIndex = randomInterval.selectedIndex;
+          const newIndex = Math.min(randomInterval.options.length - 1, currentIndex + 1);
+          randomInterval.selectedIndex = newIndex;
+          randomInterval.dispatchEvent(new Event('change'));
+        }
+      } catch (error) { // this seems redundant but is actually needed..
+        throw error;    //something about propagating the error from the renderer to the main process
+      }
+    `).catch(err => console.error('Error executing down shortcut:', err))
+  })
+
+  // Listen for IPC messages from renderer
+  ipcMain.on('renderer-log', (event, ...args) => {
+    console.log('Renderer:', ...args);
+  });
 
   // Emitted when the window is closed
   mainWindow.on('closed', function () {
@@ -44,4 +98,9 @@ app.on('window-all-closed', function () {
 app.on('activate', function () {
   // On macOS, re-create a window when the dock icon is clicked
   if (mainWindow === null) createWindow()
+})
+
+// Unregister all shortcuts when the app is about to quit
+app.on('will-quit', () => {
+  globalShortcut.unregisterAll()
 }) 

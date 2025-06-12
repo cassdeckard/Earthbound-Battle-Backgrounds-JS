@@ -250,6 +250,9 @@ document.addEventListener("DOMContentLoaded", function () {
     randomLayer.onclick = setRandomLayer;
     fullscreen.onclick = setupFullscreen;
 
+    // Add custom event listener for fullscreen toggle
+    document.addEventListener('toggleFullscreen', toggleFullscreen);
+
     createLayerDropdown();
     createSuggestedLayersDropdown();
     createRandomIntervalDropdown();
@@ -419,30 +422,35 @@ function setupSelectedValues() {
   );
 }
 
-function setupFullscreen() {
-  var canvas = document.querySelector("canvas");
-  var content = document.querySelector("section#everything");
-  if (canvas.getAttribute("id") != "full") {
-    canvas.setAttribute("id", "full");
-    content.classList.add("hidden");
-    History.pushState(
-      { fullscreen: true },
-      document.title,
-      setUrlFromString("fullscreen=" + true)
-    );
+function toggleFullscreen() {
+  const canvas = document.querySelector("canvas");
+  if (canvas.getAttribute("id") == "full") {
+    exitFullscreen();
+  } else {
+    setupFullscreen();
   }
 }
 
-document.addEventListener("keyup", function (event) {
-  if (event.code == "Escape") {
-    var canvas = document.querySelector("canvas");
-    var content = document.querySelector("section#everything");
-    canvas.setAttribute("id", "");
-    content.classList.remove("hidden");
-    History.pushState(
-      { fullscreen: null },
-      document.title,
-      setUrlFromString("fullscreen=false")
-    );
-  }
-});
+function exitFullscreen() {
+  const canvas = document.querySelector("canvas");
+  const content = document.querySelector("section#everything");
+  canvas.setAttribute("id", "");
+  content.classList.remove("hidden");
+  History.pushState(
+    { fullscreen: null },
+    document.title,
+    setUrlFromString("fullscreen=false")
+  );
+}
+
+function setupFullscreen() {
+  const canvas = document.querySelector("canvas");
+  const content = document.querySelector("section#everything");
+  canvas.setAttribute("id", "full");
+  content.classList.add("hidden");
+  History.pushState(
+    { fullscreen: true },
+    document.title,
+    setUrlFromString("fullscreen=" + true)
+  );
+}
