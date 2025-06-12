@@ -7,14 +7,15 @@ let mainWindow
 function createWindow () {
   // Create the browser window
   mainWindow = new BrowserWindow({
-    width: 1200,
-    height: 800,
+    width: 800,
+    height: 600,
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true
     },
     icon: path.join(__dirname, 'assets/favicon-32x32.png')
   })
+  mainWindow.autoHideMenuBar = true;
 
   // Load the index.html file
   mainWindow.loadFile('index.html')
