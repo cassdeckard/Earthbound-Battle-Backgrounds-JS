@@ -10,7 +10,7 @@ async function loadROM() {
   return ROM;
 }
 
-var suggestedLayers = {
+let suggestedLayers = {
   "Coil Snake, Insane Cultist, Spiteful Crow, Unassuming Local Guy (306 / 307)": [306, 307],
   "Coil Snake (261 / 0)": [261, 0],
   "Runaway Dog (260 / 0)": [260, 0],
@@ -247,7 +247,8 @@ let content,
   suggested,
   aspectRatio,
   frameskip,
-  canvas;
+  canvas,
+  randomInterval;
 
 document.addEventListener("DOMContentLoaded", function () {
   content = document.querySelector("section#everything");
@@ -257,7 +258,7 @@ document.addEventListener("DOMContentLoaded", function () {
   aspectRatio = document.getElementById("aspectRatio");
   frameskip = document.getElementById("frameskip");
   canvas = document.querySelector("canvas");
-  let randomInterval = document.getElementById("randomInterval");
+  randomInterval = document.getElementById("randomInterval");
   let randomLayer = document.getElementById("randomLayer");
   let fullscreen = document.getElementById("fullscreen");
 
@@ -288,8 +289,8 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 function createLayerDropdown() {
-  var optionHtml = "";
-  for (var i = 0; i < 327; i++) {
+  let optionHtml = "";
+  for (let i = 0; i < 327; i++) {
     optionHtml += "<option value='" + i + "'>" + i + "</option>";
   }
 
@@ -300,7 +301,7 @@ function createLayerDropdown() {
 function createSuggestedLayersDropdown() {
   let optionHtml = "<option value='-1'></option>";
 
-  for (var key in suggestedLayers) {
+  for (let key in suggestedLayers) {
     if (suggestedLayers.hasOwnProperty(key)) {
       optionHtml += '<option value="' + key + '">' + key + "</option>";
     }
@@ -323,7 +324,7 @@ function createRandomIntervalDropdown() {
 
 function setupDropdownPushStates() {
   layer1.onchange = async function (e) {
-    var value = this.value;
+    let value = this.value;
     if (value < 0) {
       value = 0;
     }
@@ -337,7 +338,7 @@ function setupDropdownPushStates() {
   };
 
   layer2.onchange = async function (e) {
-    var value = this.value;
+    let value = this.value;
     if (value < 0) {
       value = 0;
     }
@@ -351,17 +352,15 @@ function setupDropdownPushStates() {
   };
 
   suggested.onchange = function (e) {
-    var value = this.value;
-    try {
-      layer1.selectedIndex = suggestedLayers[value][0];
-      layer1.onchange();
-      layer2.selectedIndex = suggestedLayers[value][1];
-      layer2.onchange();
-    } catch (e) {}
+    let value = this.value;
+    layer1.selectedIndex = suggestedLayers[value][0];
+    layer1.onchange();
+    layer2.selectedIndex = suggestedLayers[value][1];
+    layer2.onchange();
   };
 
   aspectRatio.onchange = function (e) {
-    var value = this.value;
+    let value = this.value;
     History.pushState(
       { aspectRatio: value },
       document.title,
@@ -370,7 +369,7 @@ function setupDropdownPushStates() {
   };
 
   frameskip.onchange = function (e) {
-    var value = this.value;
+    let value = this.value;
     History.pushState(
       { frameskip: value },
       document.title,
@@ -379,7 +378,7 @@ function setupDropdownPushStates() {
   };
 
   randomInterval.onchange = function (e) {
-    var value = this.value;
+    let value = this.value;
     History.pushState(
       { randomInterval: value },
       document.title,
@@ -434,10 +433,10 @@ function setEndlessRandom() {
 }
 
 function setupSelectedValues() {
-  var canvas = document.querySelector("canvas");
+  let canvas = document.querySelector("canvas");
 
-  var layerOneReplace = 'value="' + canvas.dataset.layerOne + '"';
-  var layerTwoReplace = 'value="' + canvas.dataset.layerTwo + '"';
+  let layerOneReplace = 'value="' + canvas.dataset.layerOne + '"';
+  let layerTwoReplace = 'value="' + canvas.dataset.layerTwo + '"';
   layer1.innerHTML = layer1.innerHTML.replace(
     new RegExp(layerOneReplace),
     "selected " + layerOneReplace
@@ -447,19 +446,19 @@ function setupSelectedValues() {
     "selected " + layerTwoReplace
   );
 
-  var aspectRatioReplace = 'value="' + canvas.dataset.aspectRatio + '"';
+  let aspectRatioReplace = 'value="' + canvas.dataset.aspectRatio + '"';
   aspectRatio.innerHTML = aspectRatio.innerHTML.replace(
     new RegExp(aspectRatioReplace),
     "selected " + aspectRatioReplace
   );
 
-  var frameskipReplace = 'value="' + canvas.dataset.frameskip + '"';
+  let frameskipReplace = 'value="' + canvas.dataset.frameskip + '"';
   frameskip.innerHTML = frameskip.innerHTML.replace(
     new RegExp(frameskipReplace),
     "selected " + frameskipReplace
   );
 
-  var randomIntervalReplace = `value="${canvas.dataset.randomInterval}"`;
+  let randomIntervalReplace = `value="${canvas.dataset.randomInterval}"`;
   randomInterval.innerHTML = randomInterval.innerHTML.replace(
     new RegExp(randomIntervalReplace),
     "selected " + randomIntervalReplace
@@ -496,30 +495,30 @@ function exitFullscreen() {
 
 // give me some JSON based on the "?" params
 function getJsonFromUrl() {
-  var query = location.search.substr(1);
+  let query = location.search.substring(1);
   if (query === "") return "";
 
-  var data = query.split("&");
-  var result = {};
-  for (var i = 0; i < data.length; i++) {
-    var item = data[i].split("=");
-    result[item[0]] = item[1];
+  let data = query.split("&");
+  let result = {};
+  for (const item of data) {
+    const [key, value] = item.split("=");
+    result[key] = value;
   }
   return result;
 }
 
 // append to the "?" params to construct a new URL
 function setUrlFromString(value) {
-  var currentUrlJson = getJsonFromUrl();
+  let currentUrlJson = getJsonFromUrl();
   if (currentUrlJson == "") {
     return "?" + value;
   }
 
-  var data = value.split("=");
-  var result = [];
+  let data = value.split("=");
+  let result = [];
   currentUrlJson[data[0]] = data[1];
 
-  for (var key in currentUrlJson) {
+  for (let key in currentUrlJson) {
     if (currentUrlJson.hasOwnProperty(key)) {
       result.push(key + "=" + currentUrlJson[key]);
     }
