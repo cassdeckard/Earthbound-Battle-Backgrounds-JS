@@ -1,3 +1,5 @@
+import { setupEngine, ROM } from "ebbg";
+
 var suggestedLayers = {
   "Coil Snake (306 / 307)": [306, 307],
   "Runaway Dog (260 / 0)": [260, 0],
@@ -231,7 +233,8 @@ let content,
   layer2,
   suggested,
   aspectRatio,
-  frameskip;
+  frameskip,
+  canvas;
 
 document.addEventListener("DOMContentLoaded", function () {
   content = document.querySelector("section#everything");
@@ -240,6 +243,7 @@ document.addEventListener("DOMContentLoaded", function () {
   suggested = document.getElementById("suggested");
   aspectRatio = document.getElementById("aspectRatio");
   frameskip = document.getElementById("frameskip");
+  canvas = document.querySelector("canvas");
   let randomInterval = document.getElementById("randomInterval");
   let randomLayer = document.getElementById("randomLayer");
   let fullscreen = document.getElementById("fullscreen");
@@ -265,8 +269,9 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   window.History.Adapter.bind(window, "statechange", function () {
-    setupEngine();
+    setupEngine(canvas, getJsonFromUrl());
   });
+  setupEngine(canvas, getJsonFromUrl());
 });
 
 function createLayerDropdown() {
@@ -486,4 +491,38 @@ function tearDownFullscreen() {
   const content = document.querySelector("section#everything");
   canvas.setAttribute("id", "");
   content.classList.remove("hidden");
+}
+
+// give me some JSON based on the "?" params
+function getJsonFromUrl() {
+  var query = location.search.substr(1);
+  if (query === "") return "";
+
+  var data = query.split("&");
+  var result = {};
+  for (var i = 0; i < data.length; i++) {
+    var item = data[i].split("=");
+    result[item[0]] = item[1];
+  }
+  return result;
+}
+
+// append to the "?" params to construct a new URL
+function setUrlFromString(value) {
+  var currentUrlJson = getJsonFromUrl();
+  if (currentUrlJson == "") {
+    return "?" + value;
+  }
+
+  var data = value.split("=");
+  var result = [];
+  currentUrlJson[data[0]] = data[1];
+
+  for (var key in currentUrlJson) {
+    if (currentUrlJson.hasOwnProperty(key)) {
+      result.push(key + "=" + currentUrlJson[key]);
+    }
+  }
+
+  return "?" + result.join("&");
 }

@@ -5,12 +5,12 @@ const SOURCE = path.join(__dirname, "src");
 const DESTINATION = path.join(__dirname, "dist");
 const ENV = process.env.NODE_ENV;
 const isDebug = ENV === "development";
-const mode = "production";
+const mode = isDebug ? "development" : "production";
 
 export default {
   context: __dirname,
   entry: {
-    index: "./src",
+    index: "./index.js",
   },
   mode: mode,
   output: {
