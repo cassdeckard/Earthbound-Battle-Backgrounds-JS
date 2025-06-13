@@ -471,26 +471,12 @@ function enterFullscreen() {
   );
 }
 
-function setupFullscreen() {
-  const canvas = document.querySelector("canvas");
-  const content = document.querySelector("section#everything");
-  canvas.setAttribute("id", "full");
-  content.classList.add("hidden");
-}
-
 function exitFullscreen() {
   History.pushState(
     { fullscreen: null },
     document.title,
     setUrlFromString("fullscreen=false")
   );
-}
-
-function tearDownFullscreen() {
-  const canvas = document.querySelector("canvas");
-  const content = document.querySelector("section#everything");
-  canvas.setAttribute("id", "");
-  content.classList.remove("hidden");
 }
 
 // give me some JSON based on the "?" params
