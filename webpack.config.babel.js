@@ -1,6 +1,7 @@
 import webpack from "webpack";
 import path from "path";
-import BabiliPlugin from "babili-webpack-plugin";
+import { BundleAnalyzerPlugin } from "webpack-bundle-analyzer";
+
 const SOURCE = path.join(__dirname, "src");
 const DESTINATION = path.join(__dirname, "dist");
 const ENV = process.env.NODE_ENV;
@@ -20,6 +21,11 @@ export default {
     chunkFilename: "[name]-[chunkhash].js",
     libraryTarget: "umd",
   },
+  performance: {
+    hints: isDebug ? false : "warning",
+    maxEntrypointSize: 512000,
+    maxAssetSize: 512000,
+  },
   module: {
     rules: [
       {
@@ -35,11 +41,20 @@ export default {
     ],
   },
   devtool: isDebug ? "inline-sourcemap" : false,
+  optimization: {
+    usedExports: true,
+    sideEffects: false,
+    minimize: !isDebug,
+  },
   plugins: isDebug
     ? []
     : [
         new webpack.optimize.OccurrenceOrderPlugin(),
         new webpack.optimize.ModuleConcatenationPlugin(),
-        new BabiliPlugin(),
+        new BundleAnalyzerPlugin({
+          analyzerMode: "static",
+          openAnalyzer: false,
+          reportFilename: "bundle-report.html",
+        }),
       ],
 };

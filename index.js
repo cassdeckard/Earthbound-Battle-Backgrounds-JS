@@ -1,4 +1,14 @@
-import { setupEngine, ROM } from "ebbg";
+import { setupEngine } from "ebbg";
+
+// Dynamically import ROM data when needed
+let ROM = null;
+async function loadROM() {
+  if (!ROM) {
+    const { ROM: ROMData } = await import("ebbg");
+    ROM = ROMData;
+  }
+  return ROM;
+}
 
 var suggestedLayers = {
   "Coil Snake, Insane Cultist, Spiteful Crow, Unassuming Local Guy (306 / 307)": [306, 307],
@@ -312,12 +322,13 @@ function createRandomIntervalDropdown() {
 }
 
 function setupDropdownPushStates() {
-  layer1.onchange = function (e) {
+  layer1.onchange = async function (e) {
     var value = this.value;
     if (value < 0) {
       value = 0;
     }
-    document.engine.layers[0] = new document.BackgroundLayer(value, ROM);
+    const romData = await loadROM();
+    document.engine.layers[0] = new document.BackgroundLayer(value, romData);
     History.pushState(
       { layer1: value },
       document.title,
@@ -325,12 +336,13 @@ function setupDropdownPushStates() {
     );
   };
 
-  layer2.onchange = function (e) {
+  layer2.onchange = async function (e) {
     var value = this.value;
     if (value < 0) {
       value = 0;
     }
-    document.engine.layers[1] = new document.BackgroundLayer(value, ROM);
+    const romData = await loadROM();
+    document.engine.layers[1] = new document.BackgroundLayer(value, romData);
     History.pushState(
       { layer2: value },
       document.title,
