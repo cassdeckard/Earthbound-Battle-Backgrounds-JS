@@ -3,3 +3,5 @@ sample/
 .DS_Store
 packages/
 *.log
+electron-dist/
+dist/
