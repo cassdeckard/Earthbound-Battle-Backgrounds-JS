@@ -1,10 +1,10 @@
-import { setupEngine } from "ebbg";
+import { setupEngine } from "@cassdeckard/ebbg";
 
 // Dynamically import ROM data when needed
 let ROM = null;
 async function loadROM() {
   if (!ROM) {
-    const { ROM: ROMData } = await import("ebbg");
+    const { ROM: ROMData } = await import("@cassdeckard/ebbg");
     ROM = ROMData;
   }
   return ROM;
